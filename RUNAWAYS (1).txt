@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
-local Players = game:GetService("Players")
+local Players = game:GetService("ผู้เล่น")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -91,8 +91,8 @@ end
 local data = require(dataModule)
 local packages = require(ReplicatedStorage:WaitForChild("Packages"))
 local luck = packages.Utility.Luck
-local lootData = flow.Loot and require(dataModule:WaitForChild("Loot"):WaitForChild("Data")) or {}
-local lootFolder = flow.Loot and workspace:WaitForChild("Loot") or workspace:FindFirstChild("Loot")
+local lootData = flow.Loot and require(dataModule:WaitForChild("ของปล้น"):WaitForChild("Data")) or {}
+local lootFolder = flow.Loot and workspace:WaitForChild("ของปล้น") or workspace:FindFirstChild("ของปล้น")
 
 if flow.Loot then
     assert(type(flow.Loot.LootEquip) == "function", "LootEquip is unavailable")
@@ -307,7 +307,7 @@ local function getPickupCFrame(root, part)
 end
 
 local function killAllNPCs(radius)
-    local folder = workspace:FindFirstChild("NPCs")
+    local folder = workspace:FindFirstChild("เอ็นพีซี")
 
     if not folder or not flow.NPCs or type(flow.NPCs.Damage) ~= "function" then
         return 0
@@ -335,7 +335,7 @@ local function killAllNPCs(radius)
 end
 
 function library.Rage:AggroNPCs(radius)
-    local folder = workspace:FindFirstChild("NPCs")
+    local folder = workspace:FindFirstChild("เอ็นพีซี")
     local character = player.Character
     local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
 
@@ -513,12 +513,12 @@ local activeWeaponConfig
 local activeWeaponRuntime
 local vehicleAttributeNames = {
     "TopSpeedMPH",
-    "Acceleration",
+    "อัตราเร่ง",
     "Torque",
     "BrakingPower",
     "TurningAngle",
     "TurningAngleSpeedFactor",
-    "Downforce",
+    "แรงกดรถ",
 }
 local vehicleCorners = { "fl", "fr", "rl", "rr" }
 
@@ -579,7 +579,7 @@ function teleports:Refresh(force)
     }
     local map = workspace:FindFirstChild("Map")
     local buildings = map and map:FindFirstChild("Buildings")
-    local npcs = workspace:FindFirstChild("NPCs")
+    local npcs = workspace:FindFirstChild("เอ็นพีซี")
     local vehicles = workspace:FindFirstChild("Vehicles")
 
     if buildings then
@@ -602,7 +602,7 @@ function teleports:Refresh(force)
     end
 
     if npcs then
-        for _, npc in CollectionService:GetTagged("NPC") do
+        for _, npc in CollectionService:GetTagged("เอ็นพีซี") do
             local humanoid = npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid")
             local root = npc:IsA("Model") and npc:FindFirstChild("HumanoidRootPart")
 
@@ -617,7 +617,7 @@ function teleports:Refresh(force)
     end
 
     if vehicles then
-        for _, vehicle in CollectionService:GetTagged("Vehicle") do
+        for _, vehicle in CollectionService:GetTagged("รถ") do
             local part = vehicle:IsA("Model")
                 and (getVehicleChassis(vehicle) or getVehicleSeat(vehicle) or vehicle:FindFirstChildWhichIsA("BasePart", true))
 
@@ -736,7 +736,7 @@ function teleports:Stream(position)
 end
 
 function teleports:GetDestination(kind, target)
-    if kind == "Players" then
+    if kind == "ผู้เล่น" then
         local character = target.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
         local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -769,7 +769,7 @@ function teleports:GetDestination(kind, target)
         return
     end
 
-    if kind == "NPCs" then
+    if kind == "เอ็นพีซี" then
         local humanoid = target:FindFirstChildOfClass("Humanoid")
         local root = target:FindFirstChild("HumanoidRootPart")
 
@@ -1459,7 +1459,7 @@ function teleports:GetRefuelVehicle()
         return
     end
 
-    for _, vehicle in CollectionService:GetTagged("Vehicle") do
+    for _, vehicle in CollectionService:GetTagged("รถ") do
         local gas = vehicle:FindFirstChild("gasLevel")
         local property = vehicle:FindFirstChild("VehicleProperty")
         local system = vehicle:FindFirstChild("system")
@@ -2114,11 +2114,11 @@ local function applyVehiclePerformance(vehicle)
     end
 
     setVehicleMultiplier(property, attributes, "TopSpeedMPH", topSpeed)
-    setVehicleMultiplier(property, attributes, "Acceleration", acceleration)
+    setVehicleMultiplier(property, attributes, "อัตราเร่ง", acceleration)
     setVehicleMultiplier(property, attributes, "Torque", torque)
     setVehicleMultiplier(property, attributes, "BrakingPower", brakes)
     setVehicleMultiplier(property, attributes, "TurningAngle", steering)
-    setVehicleMultiplier(property, attributes, "Downforce", downforce)
+    setVehicleMultiplier(property, attributes, "แรงกดรถ", downforce)
 
     if type(attributes.TurningAngleSpeedFactor) == "number" then
         property:SetAttribute(
@@ -3186,7 +3186,7 @@ local function refreshSilentAimTargets()
     silentAimLastScan = os.clock()
     table.clear(silentAimTargets)
 
-    for _, npc in CollectionService:GetTagged("NPC") do
+    for _, npc in CollectionService:GetTagged("เอ็นพีซี") do
         if npc:IsA("Model") and npc:IsDescendantOf(workspace) then
             silentAimTargets[#silentAimTargets + 1] = {
                 Model = npc,
@@ -3483,7 +3483,7 @@ local function newESPVisual(kind)
         Tracer = newESPObject("Line"),
     }
 
-    if kind == "NPCs" or kind == "Players" then
+    if kind == "เอ็นพีซี" or kind == "ผู้เล่น" then
         visual.HealthBack = newESPObject("Line")
         visual.Health = newESPObject("Line")
     end
@@ -3574,7 +3574,7 @@ local function getVehiclePart(vehicle)
 end
 
 local function getESPTarget(kind, target)
-    if kind == "Items" then
+    if kind == "ไอเทม" then
         if not isLoot(target) then
             return
         end
@@ -3582,7 +3582,7 @@ local function getESPTarget(kind, target)
         return target, target.PrimaryPart
     end
 
-    if kind == "NPCs" then
+    if kind == "เอ็นพีซี" then
         local humanoid = target.Parent and target:FindFirstChildOfClass("Humanoid")
         local root = target.Parent and target:FindFirstChild("HumanoidRootPart")
 
@@ -3597,7 +3597,7 @@ local function getESPTarget(kind, target)
         return target, root, humanoid
     end
 
-    if kind == "Players" then
+    if kind == "ผู้เล่น" then
         local character = target.Parent == Players and target.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
         local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -3685,7 +3685,7 @@ end
 local function getESPText(kind, target, humanoid, extra, distance)
     local parts = {}
 
-    if kind == "Items" then
+    if kind == "ไอเทม" then
         if toggles.RunawaysESPItemName.Value then
             parts[#parts + 1] = formatName(target.Name)
         end
@@ -3697,7 +3697,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
         if toggles.RunawaysESPItemPrice.Value then
             parts[#parts + 1] = "$" .. tostring(lootValueByName[target.Name] or 0)
         end
-    elseif kind == "NPCs" then
+    elseif kind == "เอ็นพีซี" then
         if toggles.RunawaysESPNPCName.Value then
             parts[#parts + 1] = formatName(target.Name)
         end
@@ -3705,7 +3705,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
         if toggles.RunawaysESPNPCHealth.Value and humanoid.Health >= 0 then
             parts[#parts + 1] = string.format("%d/%d HP", humanoid.Health, humanoid.MaxHealth)
         end
-    elseif kind == "Players" then
+    elseif kind == "ผู้เล่น" then
         if toggles.RunawaysESPPlayerName.Value then
             local name = target.DisplayName
 
@@ -3732,7 +3732,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
     end
 
     if toggles[espConfig[kind].Distance].Value then
-        parts[#parts + 1] = tostring(math.round(distance)) .. " studs"
+        parts[#parts + 1] = tostring(math.round(distance)) .. " หน่วย"
     end
 
     return table.concat(parts, " | ")
@@ -3741,7 +3741,7 @@ end
 local function getESPColor(kind, target)
     local colorOption = options[espConfig[kind].Color]
 
-    if kind == "Items"
+    if kind == "ไอเทม"
         and toggles.RunawaysESPItemHighValue.Value
         and (tonumber(lootValueByName[target.Name]) or 0) >= options.RunawaysESPItemHighValueThreshold.Value
     then
@@ -3973,7 +3973,7 @@ local function scanESP()
     end
 
     if toggles.RunawaysESPNPCs.Value then
-        local folder = workspace:FindFirstChild("NPCs")
+        local folder = workspace:FindFirstChild("เอ็นพีซี")
 
         if folder then
             local seen = {}
@@ -4041,9 +4041,9 @@ local function scanESP()
         end
     end
 
-    syncESPTargets("Items", items)
-    syncESPTargets("NPCs", npcs)
-    syncESPTargets("Players", players)
+    syncESPTargets("ไอเทม", items)
+    syncESPTargets("เอ็นพีซี", npcs)
+    syncESPTargets("ผู้เล่น", players)
     syncESPTargets("Vehicles", vehicles)
     syncESPTargets("Safes", safes)
 end
@@ -6057,7 +6057,7 @@ function library.AutoFarm:UpdateUI()
     self:SetLabel("Sweep", "Sweep cash: $" .. tostring(math.floor(self.Stats.SweepCash)) .. " | Items sold: " .. tostring(math.floor(self.Stats.SweepItems)))
     self:SetLabel("Run", "Current run: " .. self:FormatDuration(runElapsed) .. " | Gate: " .. self.GateText)
     self:SetLabel("Error", "Last error: " .. self.LastError)
-    self:SetLabel("Webhook", "Webhook: " .. self.WebhookStatus)
+    self:SetLabel("เว็บฮุก", "Webhook: " .. self.WebhookStatus)
 end
 
 function library.AutoFarm:ResetStats()
@@ -6538,7 +6538,7 @@ function library.AutoFarm:BuildWebhook(event, detail)
                 color = event == "Error" and 15158332 or event == "Run Completed" and 5763719 or 3447003,
                 fields = {
                     {
-                        name = "Player",
+                        name = "ผู้เล่น",
                         value = player.DisplayName .. " (@" .. player.Name .. ")",
                         inline = true,
                     },
@@ -6755,7 +6755,7 @@ function library.AutoFarm:QueueTeleport(reason, expectedPlaceId)
             .. "end",
         self.LobbyPlaceId,
         self.GamePlaceId,
-        "Players",
+        "ผู้เล่น",
         "TeleportService",
         self.TransitionKey,
         self.EnabledKey,
@@ -7512,7 +7512,7 @@ function library.AutoFarm:HandleEndScreen(token)
         local requests = 0
 
         self.ReplayRequested = true
-        self:SetPhase("Auto Replay", "Waiting for the replay control")
+        self:SetPhase("เล่นซ้ำอัตโนมัติ", "Waiting for the replay control")
 
         repeat
             self.RunHeartbeat = os.clock()
@@ -7568,7 +7568,7 @@ function library.AutoFarm:HandleEndScreen(token)
                         and currentVotes >= requiredVotes
 
                     if voteComplete then
-                        self:SetPhase("Auto Replay", "Replay vote confirmed")
+                        self:SetPhase("เล่นซ้ำอัตโนมัติ", "Replay vote confirmed")
                         nextRequestAt = os.clock() + 5
                     elseif replayButton or os.clock() - replayStartedAt >= 8 then
                         if not queued then
@@ -7577,7 +7577,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if not queued then
                                 self.LastError = tostring(queueError)
-                                self:SetPhase("Auto Replay", "Waiting for the teleport loader")
+                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Waiting for the teleport loader")
                                 nextRequestAt = os.clock() + 3
                             end
                         end
@@ -7587,7 +7587,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if firstRequest then
                                 self.Stats.Replays += 1
-                                self:SetPhase("Auto Replay", "Submitting replay vote")
+                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Submitting replay vote")
                                 self:Persist()
                             end
 
@@ -7595,7 +7595,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if requested then
                                 requests += 1
-                                self:SetPhase("Auto Replay", "Replay vote submitted")
+                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Replay vote submitted")
                             else
                                 if firstRequest then
                                     self.Stats.Replays = math.max(0, self.Stats.Replays - 1)
@@ -7603,7 +7603,7 @@ function library.AutoFarm:HandleEndScreen(token)
                                 end
 
                                 self.LastError = tostring(replayError)
-                                self:SetPhase("Auto Replay", self.LastError)
+                                self:SetPhase("เล่นซ้ำอัตโนมัติ", self.LastError)
                             end
 
                             nextRequestAt = os.clock() + 2
@@ -8270,7 +8270,7 @@ function library.AutoFarm:IsGateWindowOpen()
 
     local playerGui = player:FindFirstChildOfClass("PlayerGui")
     local hud = playerGui and playerGui:FindFirstChild("HudGui")
-    local events = hud and hud:FindFirstChild("Events")
+    local events = hud and hud:FindFirstChild("เหตุการณ์")
     local closing = events and events:FindFirstChild("Closing")
 
     if not closing or not closing.Visible then
@@ -8539,7 +8539,7 @@ function library.AutoFarm:MoveToSafeZone(token)
     root.AssemblyAngularVelocity = Vector3.zero
     root.Anchored = true
     self:DisengageHelicopter()
-    self:SetPhase("Safe Gate Wait", "Protected from the helicopter until the gate opens")
+    self:SetPhase("รอประตูอย่างปลอดภัย", "Protected from the helicopter until the gate opens")
 
     return true
 end
@@ -8923,7 +8923,7 @@ function library.AutoFarm:RunGame(token)
         and library.MapSweep:GetSetting("RunawaysAutoFarmSweepFull", "SweepFull", false)
     then
         library.MapSweep.FullSweepJob = game.JobId
-        self:RunSweep(token, "Loot Sweep", tonumber(library.MapSweep:GetSetting("RunawaysAutoFarmSweepLimit", "SweepLimit", 180)) or 180)
+        self:RunSweep(token, "กวาดของปล้น", tonumber(library.MapSweep:GetSetting("RunawaysAutoFarmSweepLimit", "SweepLimit", 180)) or 180)
 
         if not self.Running or self.Token ~= token then
             return true
@@ -9361,51 +9361,51 @@ local window = library:CreateWindow({
 })
 
 local tabs = {
-    Main = window:AddTab("Main", "package", ""),
-    Player = window:AddTab("Player", "user", ""),
-    Teleports = window:AddTab("Teleports", "map-pin", ""),
-    Car = window:AddTab("Car Modify", "car-front", ""),
-    Weapon = window:AddTab("Weapon", "crosshair", ""),
-    ESP = window:AddTab("ESP", "eye", ""),
-    AutoFarm = window:AddTab("Auto Farm", "bot", ""),
-    Settings = window:AddTab("Settings", "settings", ""),
+    Main = window:AddTab("หน้าหลัก", "package", ""),
+    Player = window:AddTab("ผู้เล่น", "user", ""),
+    Teleports = window:AddTab("เทเลพอร์ต", "map-pin", ""),
+    Car = window:AddTab("ปรับแต่งรถ", "car-front", ""),
+    Weapon = window:AddTab("อาวุธ", "crosshair", ""),
+    ESP = window:AddTab("แสดงข้อมูล", "eye", ""),
+    AutoFarm = window:AddTab("ฟาร์มอัตโนมัติ", "bot", ""),
+    Settings = window:AddTab("ตั้งค่า", "settings", ""),
 }
 
 if library.LobbyShop:IsLobby() then
-    library.LobbyShop.Box = tabs.Main:AddLeftGroupbox("Lobby Shop", "store")
+    library.LobbyShop.Box = tabs.Main:AddLeftGroupbox("ร้านค้าโถงรอ", "store")
 end
 
-local lootBox = tabs.Main:AddLeftGroupbox("Loot", "package-open")
-local sellBox = tabs.Main:AddLeftGroupbox("Money", "badge-dollar-sign")
-tabs.RemoteShopBox = tabs.Main:AddLeftGroupbox("Remote Shop", "shopping-cart")
-local npcBox = library.IsMobile and tabs.Main:AddLeftGroupbox("NPCs", "users") or tabs.Main:AddRightGroupbox("NPCs", "users")
-bringItems.Box = library.IsMobile and tabs.Main:AddLeftGroupbox("Bring Items", "package-plus") or tabs.Main:AddRightGroupbox("Bring Items", "package-plus")
-local utilityBox = library.IsMobile and tabs.Main:AddLeftGroupbox("Utility", "wrench") or tabs.Main:AddRightGroupbox("Utility", "wrench")
-local movementBox = tabs.Player:AddLeftGroupbox("Movement", "gauge")
-local worldBox = library.IsMobile and tabs.Player:AddLeftGroupbox("Camera and World", "camera") or tabs.Player:AddRightGroupbox("Camera and World", "camera")
-punchMods.Box = library.IsMobile and tabs.Player:AddLeftGroupbox("Melee Mods", "hand") or tabs.Player:AddRightGroupbox("Melee Mods", "hand")
-teleports.LocationBox = tabs.Teleports:AddLeftGroupbox("Locations", "map-pin")
-teleports.EntityBox = library.IsMobile and tabs.Teleports:AddLeftGroupbox("Entities", "users") or tabs.Teleports:AddRightGroupbox("Entities", "users")
-local carPerformanceBox = tabs.Car:AddLeftGroupbox("Performance", "gauge")
-local carUtilityBox = library.IsMobile and tabs.Car:AddLeftGroupbox("Vehicle Utility", "wrench") or tabs.Car:AddRightGroupbox("Vehicle Utility", "wrench")
-local weaponBox = tabs.Weapon:AddLeftGroupbox("Weapon Mods", "crosshair")
-local silentAimBox = library.IsMobile and tabs.Weapon:AddLeftGroupbox("Silent Aim", "target") or tabs.Weapon:AddRightGroupbox("Silent Aim", "target")
-library.AutoFarm.ControlBox = tabs.AutoFarm:AddLeftGroupbox("Automation", "bot")
-library.AutoFarm.StatsBox = tabs.AutoFarm:AddLeftGroupbox("Session Statistics", "chart-no-axes-combined")
-library.AutoFarm.RunBox = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("Run Details", "route") or tabs.AutoFarm:AddRightGroupbox("Run Details", "route")
-library.MapSweep.Box = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("Loot Sweep", "radar") or tabs.AutoFarm:AddRightGroupbox("Loot Sweep", "radar")
-library.AutoFarm.WebhookBox = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("Webhook", "webhook") or tabs.AutoFarm:AddRightGroupbox("Webhook", "webhook")
+local lootBox = tabs.Main:AddLeftGroupbox("ของปล้น", "package-open")
+local sellBox = tabs.Main:AddLeftGroupbox("เงิน", "badge-dollar-sign")
+tabs.RemoteShopBox = tabs.Main:AddLeftGroupbox("ร้านค้าเซิร์ฟเวอร์", "shopping-cart")
+local npcBox = library.IsMobile and tabs.Main:AddLeftGroupbox("เอ็นพีซี", "users") or tabs.Main:AddRightGroupbox("เอ็นพีซี", "users")
+bringItems.Box = library.IsMobile and tabs.Main:AddLeftGroupbox("นำไอเทมมา", "package-plus") or tabs.Main:AddRightGroupbox("นำไอเทมมา", "package-plus")
+local utilityBox = library.IsMobile and tabs.Main:AddLeftGroupbox("เครื่องมือ", "wrench") or tabs.Main:AddRightGroupbox("เครื่องมือ", "wrench")
+local movementBox = tabs.Player:AddLeftGroupbox("การเคลื่อนไหว", "gauge")
+local worldBox = library.IsMobile and tabs.Player:AddLeftGroupbox("กล้องและโลก", "camera") or tabs.Player:AddRightGroupbox("กล้องและโลก", "camera")
+punchMods.Box = library.IsMobile and tabs.Player:AddLeftGroupbox("ปรับแต่งการโจมตีระยะประชิด", "hand") or tabs.Player:AddRightGroupbox("ปรับแต่งการโจมตีระยะประชิด", "hand")
+teleports.LocationBox = tabs.Teleports:AddLeftGroupbox("สถานที่", "map-pin")
+teleports.EntityBox = library.IsMobile and tabs.Teleports:AddLeftGroupbox("สิ่งต่าง ๆ", "users") or tabs.Teleports:AddRightGroupbox("สิ่งต่าง ๆ", "users")
+local carPerformanceBox = tabs.Car:AddLeftGroupbox("สมรรถนะ", "gauge")
+local carUtilityBox = library.IsMobile and tabs.Car:AddLeftGroupbox("เครื่องมือรถ", "wrench") or tabs.Car:AddRightGroupbox("เครื่องมือรถ", "wrench")
+local weaponBox = tabs.Weapon:AddLeftGroupbox("ปรับแต่งอาวุธ", "crosshair")
+local silentAimBox = library.IsMobile and tabs.Weapon:AddLeftGroupbox("เล็งเงียบ", "target") or tabs.Weapon:AddRightGroupbox("เล็งเงียบ", "target")
+library.AutoFarm.ControlBox = tabs.AutoFarm:AddLeftGroupbox("ระบบอัตโนมัติ", "bot")
+library.AutoFarm.StatsBox = tabs.AutoFarm:AddLeftGroupbox("สถิติรอบการเล่น", "chart-no-axes-combined")
+library.AutoFarm.RunBox = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("รายละเอียดรอบ", "route") or tabs.AutoFarm:AddRightGroupbox("รายละเอียดรอบ", "route")
+library.MapSweep.Box = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("กวาดของปล้น", "radar") or tabs.AutoFarm:AddRightGroupbox("กวาดของปล้น", "radar")
+library.AutoFarm.WebhookBox = library.IsMobile and tabs.AutoFarm:AddLeftGroupbox("เว็บฮุก", "webhook") or tabs.AutoFarm:AddRightGroupbox("เว็บฮุก", "webhook")
 local espLeft = tabs.ESP:AddLeftTabbox()
 local espRight = library.IsMobile and espLeft or tabs.ESP:AddRightTabbox()
-local espStyleBox = espLeft:AddTab("Style")
-local espItemBox = espRight:AddTab("Items")
-local espPlayerBox = espRight:AddTab("Players")
-local espNPCBox = espRight:AddTab("NPCs")
-local espWorldBox = espRight:AddTab("World")
-local menuBox = tabs.Settings:AddLeftGroupbox("Menu", "wrench")
+local espStyleBox = espLeft:AddTab("รูปแบบ")
+local espItemBox = espRight:AddTab("ไอเทม")
+local espPlayerBox = espRight:AddTab("ผู้เล่น")
+local espNPCBox = espRight:AddTab("เอ็นพีซี")
+local espWorldBox = espRight:AddTab("โลก")
+local menuBox = tabs.Settings:AddLeftGroupbox("เมนู", "wrench")
 
 library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarm", {
-    Text = "Auto Farm",
+    Text = "ฟาร์มอัตโนมัติ",
     Default = false,
     Callback = function(value)
         if value then
@@ -9417,7 +9417,7 @@ library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarm", {
 })
 
 library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarmSafeGateWait", {
-    Text = "Safe Gate Wait",
+    Text = "รอประตูอย่างปลอดภัย",
     Default = true,
     Callback = function(value)
         library.AutoFarm.Config.SafeGateWait = value
@@ -9433,7 +9433,7 @@ library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarmSafeGateWait", {
 })
 
 library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarmAutoReplay", {
-    Text = "Auto Replay",
+    Text = "เล่นซ้ำอัตโนมัติ",
     Default = true,
     Callback = function(value)
         library.AutoFarm.Config.AutoReplay = value
@@ -9445,12 +9445,12 @@ library.AutoFarm.ControlBox:AddToggle("RunawaysAutoFarmAutoReplay", {
 })
 
 library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmLobbyDelay", {
-    Text = "Delay Between Runs",
+    Text = "หน่วงเวลาระหว่างรอบ",
     Default = 3,
     Min = 0,
     Max = 30,
     Rounding = 0,
-    Suffix = " seconds",
+    Suffix = " วินาที",
     Callback = function(value)
         library.AutoFarm.Config.LobbyDelay = value
 
@@ -9461,12 +9461,12 @@ library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmLobbyDelay", {
 })
 
 library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmGateTimeout", {
-    Text = "Gate Timeout",
+    Text = "หมดเวลาประตู",
     Default = 165,
     Min = 125,
     Max = 240,
     Rounding = 0,
-    Suffix = " seconds",
+    Suffix = " วินาที",
     Callback = function(value)
         library.AutoFarm.Config.GateTimeout = value
 
@@ -9477,12 +9477,12 @@ library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmGateTimeout", {
 })
 
 library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmRetryDelay", {
-    Text = "Retry Delay",
+    Text = "หน่วงเวลาลองใหม่",
     Default = 10,
     Min = 3,
     Max = 30,
     Rounding = 0,
-    Suffix = " seconds",
+    Suffix = " วินาที",
     Callback = function(value)
         library.AutoFarm.Config.RetryDelay = value
 
@@ -9492,27 +9492,27 @@ library.AutoFarm.ControlBox:AddSlider("RunawaysAutoFarmRetryDelay", {
     end,
 })
 
-library.AutoFarm.ControlBox:AddButton("Reset Statistics", function()
+library.AutoFarm.ControlBox:AddButton("รีเซ็ตสถิติ", function()
     library.AutoFarm:ResetStats()
     notify("Auto Farm statistics reset.")
 end)
 
-library.AutoFarm.Labels.Session = library.AutoFarm.StatsBox:AddLabel("Session: 00:00:00 | Credz: +0", true)
-library.AutoFarm.Labels.Runs = library.AutoFarm.StatsBox:AddLabel("Runs: 0 completed / 0 started | 0.0%", true)
-library.AutoFarm.Labels.Failures = library.AutoFarm.StatsBox:AddLabel("Failures: 0 | Retries: 0 | Replay votes: 0 | Teleports: 0", true)
-library.AutoFarm.Labels.Timing = library.AutoFarm.StatsBox:AddLabel("Average: 00:00:00 | Best: 00:00:00 | Last: 00:00:00", true)
-library.AutoFarm.Labels.Combat = library.AutoFarm.StatsBox:AddLabel("NPC attack requests: 0 | Gate activations: 0", true)
-library.AutoFarm.Labels.Sweep = library.AutoFarm.StatsBox:AddLabel("Sweep cash: $0 | Items sold: 0", true)
+library.AutoFarm.Labels.Session = library.AutoFarm.StatsBox:AddLabel("รอบการเล่น: 00:00:00 | Credz: +0", true)
+library.AutoFarm.Labels.Runs = library.AutoFarm.StatsBox:AddLabel("รอบ: สำเร็จ 0 / เริ่ม 0 | 0.0%", true)
+library.AutoFarm.Labels.Failures = library.AutoFarm.StatsBox:AddLabel("ล้มเหลว: 0 | ลองใหม่: 0 | โหวตเล่นซ้ำ: 0 | เทเลพอร์ต: 0", true)
+library.AutoFarm.Labels.Timing = library.AutoFarm.StatsBox:AddLabel("เฉลี่ย: 00:00:00 | ดีที่สุด: 00:00:00 | ล่าสุด: 00:00:00", true)
+library.AutoFarm.Labels.Combat = library.AutoFarm.StatsBox:AddLabel("คำขอโจมตีเอ็นพีซี: 0 | เปิดใช้ประตู: 0", true)
+library.AutoFarm.Labels.Sweep = library.AutoFarm.StatsBox:AddLabel("เงินจากการกวาด: $0 | ไอเทมที่ขาย: 0", true)
 
-library.AutoFarm.Labels.Status = library.AutoFarm.RunBox:AddLabel("Status: Idle\nReady", true)
-library.AutoFarm.Labels.Context = library.AutoFarm.RunBox:AddLabel("Context: Detecting", true)
-library.AutoFarm.Labels.Queue = library.AutoFarm.RunBox:AddLabel("Queue: Not armed", true)
-library.AutoFarm.Labels.Run = library.AutoFarm.RunBox:AddLabel("Current run: 00:00:00 | Gate: --", true)
-library.AutoFarm.Labels.Error = library.AutoFarm.RunBox:AddLabel("Last error: None", true)
-library.AutoFarm.Labels.Webhook = library.AutoFarm.RunBox:AddLabel("Webhook: Idle", true)
+library.AutoFarm.Labels.Status = library.AutoFarm.RunBox:AddLabel("สถานะ: ว่าง\nพร้อมใช้งาน", true)
+library.AutoFarm.Labels.Context = library.AutoFarm.RunBox:AddLabel("บริบท: กำลังตรวจจับ", true)
+library.AutoFarm.Labels.Queue = library.AutoFarm.RunBox:AddLabel("คิว: ยังไม่เตรียมทำงาน", true)
+library.AutoFarm.Labels.Run = library.AutoFarm.RunBox:AddLabel("รอบปัจจุบัน: 00:00:00 | ประตู: --", true)
+library.AutoFarm.Labels.Error = library.AutoFarm.RunBox:AddLabel("ข้อผิดพลาดล่าสุด: ไม่มี", true)
+library.AutoFarm.Labels.Webhook = library.AutoFarm.RunBox:AddLabel("เว็บฮุก: ว่าง", true)
 
 library.AutoFarm.WebhookBox:AddInput("RunawaysAutoFarmWebhookURL", {
-    Text = "Discord Webhook URL",
+    Text = "ลิงก์เว็บฮุก Discord",
     Default = "",
     Finished = true,
     ClearTextOnFocus = false,
@@ -9529,7 +9529,7 @@ library.AutoFarm.WebhookBox:AddInput("RunawaysAutoFarmWebhookURL", {
 })
 
 library.AutoFarm.WebhookBox:AddToggle("RunawaysAutoFarmWebhook", {
-    Text = "Webhook Notifications",
+    Text = "แจ้งเตือนผ่านเว็บฮุก",
     Default = false,
     Callback = function(value)
         library.AutoFarm.Webhook.Enabled = value
@@ -9544,7 +9544,7 @@ library.AutoFarm.WebhookBox:AddDropdown("RunawaysAutoFarmWebhookEvents", {
     Values = { "Session Started", "Run Started", "Run Completed", "Error", "Stopped" },
     Default = { "Session Started", "Run Started", "Run Completed", "Error", "Stopped" },
     Multi = true,
-    Text = "Events",
+    Text = "เหตุการณ์",
     MaxVisibleDropdownItems = 8,
     Callback = function(value)
         library.AutoFarm.Webhook.Events = table.clone(value)
@@ -9555,58 +9555,58 @@ library.AutoFarm.WebhookBox:AddDropdown("RunawaysAutoFarmWebhookEvents", {
     end,
 })
 
-library.AutoFarm.WebhookBox:AddButton("Send Test Webhook", function()
+library.AutoFarm.WebhookBox:AddButton("ส่งเว็บฮุกทดสอบ", function()
     library.AutoFarm:SendWebhook("Test", "Webhook connection test", true)
 end)
 
 library.MapSweep.Label = library.MapSweep.Box:AddLabel("Sweep: Idle", true)
 
 library.MapSweep.Box:AddToggle("RunawaysAutoFarmSweep", {
-    Text = "Sweep During Gate Countdown",
+    Text = "กวาดของระหว่างนับถอยหลังประตู",
     Default = true,
     Callback = library.MapSweep:SettingCallback("SweepGate"),
 })
 
 library.MapSweep.Box:AddToggle("RunawaysAutoFarmSweepFull", {
-    Text = "Full Sweep Before Gate",
+    Text = "กวาดทั้งหมดก่อนถึงประตู",
     Default = false,
     Callback = library.MapSweep:SettingCallback("SweepFull"),
 })
 
 library.MapSweep.Box:AddToggle("RunawaysSweepSources", {
-    Text = "Break Cash Sources",
+    Text = "ทำลายแหล่งเงิน",
     Default = true,
     Callback = library.MapSweep:SettingCallback("SweepSources"),
 })
 
 library.MapSweep.Box:AddToggle("RunawaysSweepSafeShops", {
-    Text = "Don't Rob Pawn Shops",
+    Text = "ไม่ปล้นร้านรับจำนำ",
     Default = true,
     Callback = library.MapSweep:SettingCallback("SweepSafeShops"),
 })
 
 library.MapSweep.Box:AddSlider("RunawaysAutoFarmSweepLimit", {
-    Text = "Full Sweep Time Limit",
+    Text = "เวลาสูงสุดในการกวาดทั้งหมด",
     Default = 180,
     Min = 30,
     Max = 900,
     Rounding = 0,
-    Suffix = " seconds",
+    Suffix = " วินาที",
     Callback = library.MapSweep:SettingCallback("SweepLimit"),
 })
 
 library.MapSweep.Box:AddSlider("RunawaysSweepStep", {
-    Text = "Flight Step",
+    Text = "ระยะเคลื่อนที่",
     Default = 400,
     Min = 150,
     Max = 1500,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
     Callback = library.MapSweep:SettingCallback("SweepStep"),
 })
 
 library.MapSweep.Box:AddSlider("RunawaysSweepMinValue", {
-    Text = "Min Item Value ($)",
+    Text = "มูลค่าไอเทมขั้นต่ำ ($)",
     Default = 20,
     Min = 0,
     Max = 1000,
@@ -9615,20 +9615,20 @@ library.MapSweep.Box:AddSlider("RunawaysSweepMinValue", {
 })
 
 library.MapSweep.Box:AddSlider("RunawaysSweepBatch", {
-    Text = "Sell Batch Size",
+    Text = "จำนวนขายต่อชุด",
     Default = 5,
     Min = 1,
     Max = 10,
     Rounding = 0,
-    Suffix = " items",
+    Suffix = " รายการ",
     Callback = library.MapSweep:SettingCallback("SweepBatch"),
 })
 
-library.MapSweep.Box:AddButton("Sweep Map Now", function()
+library.MapSweep.Box:AddButton("กวาดแผนที่ตอนนี้", function()
     library.MapSweep:StartManual()
 end)
 
-library.MapSweep.Box:AddButton("Stop Sweep", function()
+library.MapSweep.Box:AddButton("หยุดกวาด", function()
     library.MapSweep:Stop()
 end)
 
@@ -9658,14 +9658,14 @@ library.AutoFarm.TeleportFailedConnection = game:GetService("TeleportService").T
     end
 )
 
-teleports.LocationBox:AddLabel("Route")
-teleports.LocationBox:AddButton("Teleport to End Gate", function()
+teleports.LocationBox:AddLabel("เส้นทาง")
+teleports.LocationBox:AddButton("เทเลพอร์ตไปประตูปลายทาง", function()
     teleports:ToEnd()
 end)
-teleports.LocationBox:AddButton("Teleport to Start", function()
+teleports.LocationBox:AddButton("เทเลพอร์ตไปจุดเริ่มต้น", function()
     teleports:ToStart()
 end)
-teleports.LocationBox:AddButton("Teleport to Ping (Q)", function()
+teleports.LocationBox:AddButton("เทเลพอร์ตไปจุดหมาย (Q)", function()
     teleports:ToObjective()
 end)
 teleports.LocationBox:AddDivider()
@@ -9673,21 +9673,21 @@ teleports.LocationBox:AddDropdown("RunawaysTeleportBuilding", {
     Values = { "None" },
     Default = 1,
     Multi = false,
-    Text = "Building",
+    Text = "อาคาร",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
 })
-teleports.LocationBox:AddButton("Teleport to Building", function()
+teleports.LocationBox:AddButton("เทเลพอร์ตไปอาคาร", function()
     teleports:Go("Buildings")
 end)
 teleports.LocationBox:AddDivider()
-teleports.LocationBox:AddButton("Save Current Position", function()
+teleports.LocationBox:AddButton("บันทึกตำแหน่งปัจจุบัน", function()
     teleports:SavePosition()
 end)
-teleports.LocationBox:AddButton("Teleport to Saved Position", function()
+teleports.LocationBox:AddButton("เทเลพอร์ตไปตำแหน่งที่บันทึก", function()
     teleports:ToSaved()
 end)
-teleports.LocationBox:AddButton("Return to Previous Position", function()
+teleports.LocationBox:AddButton("กลับตำแหน่งก่อนหน้า", function()
     teleports:ToLast()
 end)
 
@@ -9695,53 +9695,53 @@ teleports.EntityBox:AddDropdown("RunawaysTeleportNPC", {
     Values = { "None" },
     Default = 1,
     Multi = false,
-    Text = "NPC",
+    Text = "เอ็นพีซี",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
 })
-teleports.EntityBox:AddButton("Teleport to NPC", function()
-    teleports:Go("NPCs")
+teleports.EntityBox:AddButton("เทเลพอร์ตไปเอ็นพีซี", function()
+    teleports:Go("เอ็นพีซี")
 end)
 teleports.EntityBox:AddDropdown("RunawaysTeleportVehicle", {
     Values = { "None" },
     Default = 1,
     Multi = false,
-    Text = "Vehicle",
+    Text = "รถ",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
 })
-teleports.EntityBox:AddButton("Teleport to Vehicle", function()
+teleports.EntityBox:AddButton("เทเลพอร์ตไปยานพาหนะ", function()
     teleports:Go("Vehicles")
 end)
 teleports.EntityBox:AddDropdown("RunawaysTeleportPlayer", {
     Values = { "None" },
     Default = 1,
     Multi = false,
-    Text = "Player",
+    Text = "ผู้เล่น",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
 })
-teleports.EntityBox:AddButton("Teleport to Player", function()
-    teleports:Go("Players")
+teleports.EntityBox:AddButton("เทเลพอร์ตไปผู้เล่น", function()
+    teleports:Go("ผู้เล่น")
 end)
 
-npcBox:AddButton("Kill NPCs Once", function()
+npcBox:AddButton("กำจัดเอ็นพีซีครั้งเดียว", function()
     local count = killAllNPCs()
 
     notify(string.format("Attacked NPCs: %d.", count), 4)
 end)
 
 npcBox:AddSlider("RunawaysRageNPCRadius", {
-    Text = "Aura Radius",
+    Text = "รัศมีออร่า",
     Default = 150,
     Min = 10,
     Max = 1000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
 npcBox:AddToggle("RunawaysRageNPCKillAura", {
-    Text = "NPC Kill Aura",
+    Text = "ออร่ากำจัดเอ็นพีซี",
     Default = false,
     Callback = function(value)
         library.Rage.KillAuraLoop = value and {} or nil
@@ -9761,34 +9761,34 @@ npcBox:AddToggle("RunawaysRageNPCKillAura", {
     end,
 })
 
-npcBox:AddButton("Aggro Nearby NPCs", function()
+npcBox:AddButton("ดึงความสนใจเอ็นพีซีใกล้เคียง", function()
     local count = library.Rage:AggroNPCs(options.RunawaysRageNPCRadius.Value)
 
     notify(string.format("Aggro requests: %d.", count), 4)
 end)
 
 sellBox:AddSlider("RunawaysRageWorldRadius", {
-    Text = "Break Radius",
+    Text = "รัศมีทำลาย",
     Default = 100,
     Min = 10,
     Max = 1000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
-sellBox:AddButton("Break Nearby Cash Sources", function()
+sellBox:AddButton("ทำลายแหล่งเงินใกล้เคียง", function()
     local count = library.Rage:BreakNearbySources(options.RunawaysRageWorldRadius.Value)
 
     notify(string.format("Break requests: %d.", count), 4)
 end)
 
 if library.LobbyShop.Box then
-    library.LobbyShop.Box:AddLabel("Credz purchases only")
+    library.LobbyShop.Box:AddLabel("ซื้อได้เฉพาะด้วย Credz")
     library.LobbyShop.Box:AddDropdown("RunawaysLobbyShopCategory", {
         Values = library.LobbyShop:GetCategories(),
         Default = 1,
         Multi = false,
-        Text = "Category",
+        Text = "หมวดหมู่",
         Callback = function()
             library.LobbyShop:Refresh(true)
         end,
@@ -9801,12 +9801,12 @@ if library.LobbyShop.Box then
         Searchable = true,
         MaxVisibleDropdownItems = 12,
     })
-    library.LobbyShop.Box:AddButton("Buy Selected Item", function()
+    library.LobbyShop.Box:AddButton("ซื้อไอเทมที่เลือก", function()
         library.LobbyShop:Buy()
     end)
 end
 
-tabs.RemoteShopBox:AddLabel("Server prices apply")
+tabs.RemoteShopBox:AddLabel("ใช้ราคาของเซิร์ฟเวอร์")
 tabs.RemoteShopBox:AddDropdown("RunawaysRemoteShopItem", {
     Values = { "None" },
     Default = 1,
@@ -9815,7 +9815,7 @@ tabs.RemoteShopBox:AddDropdown("RunawaysRemoteShopItem", {
     Searchable = true,
     MaxVisibleDropdownItems = 12,
 })
-tabs.RemoteShopBox:AddButton("Buy Selected Item", function()
+tabs.RemoteShopBox:AddButton("ซื้อไอเทมที่เลือก", function()
     remoteShop:Buy()
 end)
 
@@ -9859,7 +9859,7 @@ lootBox:AddDropdown("LootItems", {
     Values = bringItems.Names,
     Default = {},
     Multi = true,
-    Text = "Items",
+    Text = "ไอเทม",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
@@ -9870,7 +9870,7 @@ bringItems.Box:AddDropdown("RunawaysBringItems", {
     Values = bringItems.Names,
     Default = {},
     Multi = true,
-    Text = "Items",
+    Text = "ไอเทม",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
@@ -9881,22 +9881,22 @@ bringItems.Box:AddDropdown("RunawaysBringCategories", {
     Values = dropCategories,
     Default = {},
     Multi = true,
-    Text = "Categories",
+    Text = "หมวดหมู่",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
     FormatListValue = formatName,
 })
 
-bringItems.Box:AddButton("Bring Selected", function()
+bringItems.Box:AddButton("นำรายการที่เลือกมา", function()
     bringItems:Start(false)
 end)
 
-bringItems.Box:AddButton("Bring All", function()
+bringItems.Box:AddButton("นำมาทั้งหมด", function()
     bringItems:Start(true)
 end)
 
-bringItems.Box:AddButton("Stop Bring", function()
+bringItems.Box:AddButton("หยุดนำไอเทมมา", function()
     bringItems:Stop()
 end)
 
@@ -11047,7 +11047,7 @@ local function sellAllLoot()
 end
 
 lootBox:AddButton({
-    Text = "Loot Selected",
+    Text = "เก็บไอเทมที่เลือก",
     Func = function()
         local selected = table.clone(options.LootItems.Value)
 
@@ -11063,7 +11063,7 @@ lootBox:AddButton({
 })
 
 lootBox:AddButton({
-    Text = "Loot All",
+    Text = "เก็บไอเทมทั้งหมด",
     Func = function()
         collect(function()
             return true
@@ -11072,7 +11072,7 @@ lootBox:AddButton({
 })
 
 lootBox:AddToggle("LootAura", {
-    Text = "Loot Aura",
+    Text = "ออร่าเก็บไอเทม",
     Default = false,
     Callback = function(value)
         lootAuraLoop = value and {} or nil
@@ -11097,7 +11097,7 @@ lootBox:AddDropdown("DropExclusions", {
     Values = dropCategories,
     Default = table.find(dropCategories, "Backpack"),
     Multi = true,
-    Text = "Keep Categories",
+    Text = "เก็บหมวดหมู่ไว้",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
@@ -11105,7 +11105,7 @@ lootBox:AddDropdown("DropExclusions", {
 })
 
 lootBox:AddButton({
-    Text = "Drop All Loot",
+    Text = "ทิ้งของปล้นทั้งหมด",
     Func = dropAllLoot,
 })
 
@@ -11113,7 +11113,7 @@ sellBox:AddDropdown("RunawaysCashSources", {
     Values = { "ATM", "Register", "Safe", "Nightstand", "Dumpster", "MailBox", "GarbageCan" },
     Default = { "ATM", "Register", "Safe", "Nightstand", "Dumpster", "MailBox", "GarbageCan" },
     Multi = true,
-    Text = "Cash Sources",
+    Text = "แหล่งเงิน",
     Searchable = true,
     MaxVisibleDropdownItems = 10,
     FormatDisplayValue = formatName,
@@ -11121,28 +11121,28 @@ sellBox:AddDropdown("RunawaysCashSources", {
 })
 
 sellBox:AddButton({
-    Text = "Cash Run",
+    Text = "รอบเก็บเงิน",
     Func = function()
         bringItems:StartCashRun(true)
     end,
 })
 
 sellBox:AddButton({
-    Text = "Collect All Cash",
+    Text = "เก็บเงินทั้งหมด",
     Func = function()
         bringItems:StartCashRun(false)
     end,
 })
 
 sellBox:AddButton({
-    Text = "Stop Cash Run",
+    Text = "หยุดรอบเก็บเงิน",
     Func = function()
         bringItems:StopCash()
     end,
 })
 
 sellBox:AddToggle("RunawaysCashAura", {
-    Text = "Cash Aura",
+    Text = "ออร่าเก็บเงิน",
     Default = false,
     Callback = function(value)
         bringItems:SetCashAura(value)
@@ -11155,7 +11155,7 @@ sellBox:AddDropdown("SellExclusions", {
     Values = dropCategories,
     Default = table.find(dropCategories, "Backpack"),
     Multi = true,
-    Text = "Keep Categories",
+    Text = "เก็บหมวดหมู่ไว้",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
@@ -11163,12 +11163,12 @@ sellBox:AddDropdown("SellExclusions", {
 })
 
 sellBox:AddButton({
-    Text = "Sell All Loot",
+    Text = "ขายของปล้นทั้งหมด",
     Func = sellAllLoot,
 })
 
 npcBox:AddToggle("KillAllNPCs", {
-    Text = "Kill All NPCs",
+    Text = "กำจัดเอ็นพีซีทั้งหมด",
     Default = false,
     Callback = function(value)
         killLoop = value and {} or nil
@@ -11190,7 +11190,7 @@ npcBox:AddToggle("KillAllNPCs", {
 
 do
     utilityBox:AddToggle("RunawaysInstantPrompt", {
-        Text = "Instant Prompt",
+        Text = "โต้ตอบทันที",
         Default = false,
         Callback = function(value)
             instantPrompt:SetActive(value)
@@ -11198,7 +11198,7 @@ do
     })
 
     utilityBox:AddToggle("RunawaysVehicleAutoRefuel", {
-        Text = "Auto Refuel",
+        Text = "เติมเชื้อเพลิงอัตโนมัติ",
         Default = false,
         Callback = function(value)
             teleports:SetAutoRefuel(value)
@@ -11217,10 +11217,10 @@ local function useCurrentVehicle(callback)
     callback(vehicle)
 end
 
-carPerformanceBox:AddLabel("Uses the current vehicle's stock values")
+carPerformanceBox:AddLabel("ใช้ค่ามาตรฐานของรถคันปัจจุบัน")
 
 carPerformanceBox:AddToggle("RunawaysVehiclePerformance", {
-    Text = "Performance Mods",
+    Text = "ปรับแต่งสมรรถนะ",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11230,7 +11230,7 @@ carPerformanceBox:AddToggle("RunawaysVehiclePerformance", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleTopSpeedMultiplier", {
-    Text = "Top Speed",
+    Text = "ความเร็วสูงสุด",
     Default = 2,
     Min = 1,
     Max = 5,
@@ -11239,7 +11239,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleTopSpeedMultiplier", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleAccelerationMultiplier", {
-    Text = "Acceleration",
+    Text = "อัตราเร่ง",
     Default = 3,
     Min = 1,
     Max = 10,
@@ -11248,7 +11248,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleAccelerationMultiplier", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleTorqueMultiplier", {
-    Text = "Engine Torque",
+    Text = "แรงบิดเครื่องยนต์",
     Default = 3,
     Min = 1,
     Max = 10,
@@ -11257,7 +11257,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleTorqueMultiplier", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleBrakeMultiplier", {
-    Text = "Brake Power",
+    Text = "กำลังเบรก",
     Default = 2,
     Min = 1,
     Max = 10,
@@ -11266,7 +11266,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleBrakeMultiplier", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleSteeringMultiplier", {
-    Text = "High-Speed Steering",
+    Text = "การบังคับเลี้ยวความเร็วสูง",
     Default = 1.5,
     Min = 0.5,
     Max = 3,
@@ -11275,7 +11275,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleSteeringMultiplier", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleDownforceMultiplier", {
-    Text = "Downforce",
+    Text = "แรงกดรถ",
     Default = 1.5,
     Min = 0,
     Max = 5,
@@ -11284,7 +11284,7 @@ carPerformanceBox:AddSlider("RunawaysVehicleDownforceMultiplier", {
 })
 
 carPerformanceBox:AddToggle("RunawaysVehicleTireGripOverride", {
-    Text = "Drift Mode",
+    Text = "โหมดดริฟต์",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11294,17 +11294,17 @@ carPerformanceBox:AddToggle("RunawaysVehicleTireGripOverride", {
 })
 
 carPerformanceBox:AddSlider("RunawaysVehicleTireGrip", {
-    Text = "Drift Grip",
+    Text = "แรงยึดเกาะดริฟต์",
     Default = 0.6,
     Min = 0.1,
     Max = 2,
     Rounding = 1,
 })
 
-carUtilityBox:AddLabel("Driving controls require the driver seat")
+carUtilityBox:AddLabel("การควบคุมรถต้องนั่งเบาะคนขับ")
 
 carUtilityBox:AddToggle("RunawaysVehicleInfiniteFuel", {
-    Text = "Infinite Fuel",
+    Text = "เชื้อเพลิงไม่จำกัด",
     Default = false,
     Callback = function(value)
         if value then
@@ -11318,12 +11318,12 @@ carUtilityBox:AddToggle("RunawaysVehicleInfiniteFuel", {
 })
 
 carUtilityBox:AddToggle("RunawaysVehicleIndestructible", {
-    Text = "Indestructible Vehicle",
+    Text = "รถไม่พัง",
     Default = false,
     Callback = blockVehicleDamage,
 })
 
-carUtilityBox:AddButton("Flip Vehicle", function()
+carUtilityBox:AddButton("พลิกรถ", function()
     useCurrentVehicle(function(vehicle)
         local chassis = getVehicleChassis(vehicle)
         local seat = getVehicleSeat(vehicle)
@@ -11351,13 +11351,13 @@ carUtilityBox:AddButton("Flip Vehicle", function()
     end)
 end)
 
-carUtilityBox:AddButton("Stop Vehicle", function()
+carUtilityBox:AddButton("หยุดรถ", function()
     useCurrentVehicle(function(vehicle)
         stopVehicle(vehicle)
     end)
 end)
 
-carUtilityBox:AddButton("Reset Vehicle Mods", function()
+carUtilityBox:AddButton("รีเซ็ตการปรับแต่งรถ", function()
     for _, name in {
         "RunawaysVehiclePerformance",
         "RunawaysVehicleTireGripOverride",
@@ -11388,39 +11388,39 @@ carUtilityBox:AddButton("Reset Vehicle Mods", function()
     notify("Vehicle mods reset.")
 end)
 
-weaponBox:AddLabel("Applies to the equipped firearm")
+weaponBox:AddLabel("ใช้กับอาวุธปืนที่ถืออยู่")
 
 weaponBox:AddToggle("RunawaysWeaponInfiniteAmmo", {
-    Text = "Infinite Ammo",
+    Text = "กระสุนไม่จำกัด",
     Default = false,
 })
 
 weaponBox:AddToggle("RunawaysWeaponNoCooldown", {
-    Text = "No Cooldown",
+    Text = "ไม่มีคูลดาวน์",
     Default = false,
 })
 
 weaponBox:AddToggle("RunawaysWeaponAutomatic", {
-    Text = "Automatic Fire",
+    Text = "ยิงอัตโนมัติ",
     Default = false,
 })
 
 weaponBox:AddToggle("RunawaysWeaponNoRecoil", {
-    Text = "No Recoil",
+    Text = "ไม่มีแรงดีด",
     Default = false,
 })
 
 weaponBox:AddToggle("RunawaysWeaponNoSpread", {
-    Text = "No Spread",
+    Text = "กระสุนไม่กระจาย",
     Default = false,
 })
 
 weaponBox:AddToggle("RunawaysWeaponNoPushback", {
-    Text = "No Weapon Pushback",
+    Text = "ไม่มีแรงผลักจากอาวุธ",
     Default = false,
 })
 
-weaponBox:AddButton("Reset Weapon Mods", function()
+weaponBox:AddButton("รีเซ็ตการปรับแต่งอาวุธ", function()
     for _, name in {
         "RunawaysWeaponInfiniteAmmo",
         "RunawaysWeaponNoCooldown",
@@ -11439,10 +11439,10 @@ weaponBox:AddButton("Reset Weapon Mods", function()
     notify("Weapon mods reset.")
 end)
 
-silentAimBox:AddLabel("Screen-centered FOV")
+silentAimBox:AddLabel("FOV กึ่งกลางหน้าจอ")
 
 silentAimBox:AddToggle("RunawaysSilentAimEnabled", {
-    Text = "Silent Aim",
+    Text = "เล็งเงียบ",
     Default = false,
 })
 
@@ -11451,12 +11451,12 @@ if not library.IsMobile then
         Default = "Q",
         SyncToggleState = true,
         Mode = "Toggle",
-        Text = "Silent Aim Keybind",
+        Text = "ปุ่มเล็งเงียบ",
     })
 end
 
 silentAimBox:AddToggle("RunawaysSilentAimShowFOV", {
-    Text = "Show FOV",
+    Text = "แสดง FOV",
     Default = true,
     Callback = function(value)
         if value and not drawingAvailable then
@@ -11468,12 +11468,12 @@ silentAimBox:AddToggle("RunawaysSilentAimShowFOV", {
     end,
 }):AddColorPicker("RunawaysSilentAimFOVColor", {
     Default = Color3.fromRGB(255, 255, 255),
-    Title = "FOV Color",
+    Title = "สี FOV",
     Transparency = 0,
 })
 
 silentAimBox:AddSlider("RunawaysSilentAimFOVRadius", {
-    Text = "FOV Radius",
+    Text = "รัศมี FOV",
     Default = 150,
     Min = 25,
     Max = 500,
@@ -11482,7 +11482,7 @@ silentAimBox:AddSlider("RunawaysSilentAimFOVRadius", {
 })
 
 silentAimBox:AddSlider("RunawaysSilentAimFOVThickness", {
-    Text = "FOV Thickness",
+    Text = "ความหนา FOV",
     Default = 1,
     Min = 1,
     Max = 4,
@@ -11490,7 +11490,7 @@ silentAimBox:AddSlider("RunawaysSilentAimFOVThickness", {
 })
 
 silentAimBox:AddSlider("RunawaysSilentAimHitChance", {
-    Text = "Hit Chance",
+    Text = "โอกาสโดน",
     Default = 100,
     Min = 0,
     Max = 100,
@@ -11501,16 +11501,16 @@ silentAimBox:AddSlider("RunawaysSilentAimHitChance", {
 silentAimBox:AddDropdown("RunawaysSilentAimTargetPart", {
     Values = { "Head", "HumanoidRootPart", "Closest Part" },
     Default = 1,
-    Text = "Target Part",
+    Text = "ชิ้นส่วนเป้าหมาย",
 })
 
 silentAimBox:AddToggle("RunawaysSilentAimVisibleCheck", {
-    Text = "Visible Check",
+    Text = "ตรวจสอบการมองเห็น",
     Default = true,
 })
 
 espStyleBox:AddToggle("RunawaysESPEnabled", {
-    Text = "ESP Enabled",
+    Text = "เปิดใช้ ESP",
     Default = false,
     Callback = function(value)
         if value and not drawingAvailable then
@@ -11526,11 +11526,11 @@ espStyleBox:AddToggle("RunawaysESPEnabled", {
     Default = "P",
     SyncToggleState = true,
     Mode = "Toggle",
-    Text = "ESP Keybind",
+    Text = "ปุ่ม ESP",
 })
 
 espStyleBox:AddSlider("RunawaysESPTextSize", {
-    Text = "Text Size",
+    Text = "ขนาดข้อความ",
     Default = 13,
     Min = 10,
     Max = 24,
@@ -11540,20 +11540,20 @@ espStyleBox:AddSlider("RunawaysESPTextSize", {
 espStyleBox:AddDropdown("RunawaysESPFont", {
     Values = { "UI", "System", "Plex", "Monospace" },
     Default = 3,
-    Text = "Font",
+    Text = "แบบอักษร",
 })
 
 espStyleBox:AddToggle("RunawaysESPTextOutline", {
-    Text = "Text Outline",
+    Text = "เส้นขอบข้อความ",
     Default = true,
 }):AddColorPicker("RunawaysESPOutlineColor", {
     Default = Color3.new(0, 0, 0),
-    Title = "Outline Color",
+    Title = "สีเส้นขอบ",
     Transparency = 0,
 })
 
 espStyleBox:AddSlider("RunawaysESPBoxThickness", {
-    Text = "Line Thickness",
+    Text = "ความหนาเส้น",
     Default = 1,
     Min = 1,
     Max = 3,
@@ -11563,59 +11563,59 @@ espStyleBox:AddSlider("RunawaysESPBoxThickness", {
 espStyleBox:AddDropdown("RunawaysESPTracerOrigin", {
     Values = { "Bottom", "Center", "Mouse" },
     Default = 1,
-    Text = "Tracer Origin",
+    Text = "จุดเริ่มเส้นติดตาม",
 })
 
 espItemBox:AddToggle("RunawaysESPItems", {
-    Text = "Item ESP",
+    Text = "ESP ไอเทม",
     Default = true,
 }):AddColorPicker("RunawaysESPItemColor", {
     Default = Color3.fromRGB(255, 210, 90),
-    Title = "Item Color",
+    Title = "สีไอเทม",
     Transparency = 0,
 })
 
 espItemBox:AddToggle("RunawaysESPItemName", {
-    Text = "Show Name",
+    Text = "แสดงชื่อ",
     Default = true,
 })
 
 espItemBox:AddToggle("RunawaysESPItemCategory", {
-    Text = "Show Category",
+    Text = "แสดงหมวดหมู่",
     Default = true,
 })
 
 espItemBox:AddToggle("RunawaysESPItemPrice", {
-    Text = "Show Price",
+    Text = "แสดงราคา",
     Default = true,
 })
 
 espItemBox:AddToggle("RunawaysESPItemDistance", {
-    Text = "Show Distance",
+    Text = "แสดงระยะทาง",
     Default = true,
 })
 
 espItemBox:AddToggle("RunawaysESPItemBox", {
-    Text = "Boxes",
+    Text = "กรอบ",
     Default = false,
 })
 
 espItemBox:AddToggle("RunawaysESPItemTracer", {
-    Text = "Tracers",
+    Text = "เส้นติดตาม",
     Default = false,
 })
 
 espItemBox:AddToggle("RunawaysESPItemHighValue", {
-    Text = "High Value Color",
+    Text = "สีมูลค่าสูง",
     Default = false,
 }):AddColorPicker("RunawaysESPItemHighValueColor", {
     Default = Color3.fromRGB(80, 255, 130),
-    Title = "High Value Color",
+    Title = "สีมูลค่าสูง",
     Transparency = 0,
 })
 
 espItemBox:AddSlider("RunawaysESPItemHighValueThreshold", {
-    Text = "High Value Threshold",
+    Text = "เกณฑ์มูลค่าสูง",
     Default = math.floor(maxLootValue * 0.6),
     Min = 0,
     Max = math.max(1, math.ceil(maxLootValue)),
@@ -11624,7 +11624,7 @@ espItemBox:AddSlider("RunawaysESPItemHighValueThreshold", {
 })
 
 espItemBox:AddSlider("RunawaysESPItemMinValue", {
-    Text = "Minimum Value",
+    Text = "มูลค่าขั้นต่ำ",
     Default = 0,
     Min = 0,
     Max = math.max(1, math.ceil(maxLootValue)),
@@ -11636,7 +11636,7 @@ espItemBox:AddDropdown("RunawaysESPItemCategories", {
     Values = dropCategories,
     Default = dropCategories,
     Multi = true,
-    Text = "Categories",
+    Text = "หมวดหมู่",
     Searchable = true,
     MaxVisibleDropdownItems = 12,
     FormatDisplayValue = formatName,
@@ -11644,16 +11644,16 @@ espItemBox:AddDropdown("RunawaysESPItemCategories", {
 })
 
 espItemBox:AddSlider("RunawaysESPItemMaxDistance", {
-    Text = "Maximum Distance",
+    Text = "ระยะทางสูงสุด",
     Default = 1500,
     Min = 100,
     Max = 5000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
 espItemBox:AddSlider("RunawaysESPMaxItems", {
-    Text = "Maximum Items",
+    Text = "จำนวนไอเทมสูงสุด",
     Default = 100,
     Min = 25,
     Max = 250,
@@ -11661,193 +11661,193 @@ espItemBox:AddSlider("RunawaysESPMaxItems", {
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayers", {
-    Text = "Player ESP",
+    Text = "ESP ผู้เล่น",
     Default = true,
 }):AddColorPicker("RunawaysESPPlayerColor", {
     Default = Color3.fromRGB(75, 210, 255),
-    Title = "Player Color",
+    Title = "สีผู้เล่น",
     Transparency = 0,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerName", {
-    Text = "Show Name",
+    Text = "แสดงชื่อ",
     Default = true,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerHealth", {
-    Text = "Show Health",
+    Text = "แสดงพลังชีวิต",
     Default = true,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerDistance", {
-    Text = "Show Distance",
+    Text = "แสดงระยะทาง",
     Default = true,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerBox", {
-    Text = "Boxes",
+    Text = "กรอบ",
     Default = true,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerHealthBar", {
-    Text = "Health Bars",
+    Text = "แถบพลังชีวิต",
     Default = true,
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayerTracer", {
-    Text = "Tracers",
+    Text = "เส้นติดตาม",
     Default = false,
 })
 
 espPlayerBox:AddSlider("RunawaysESPPlayerMaxDistance", {
-    Text = "Maximum Distance",
+    Text = "ระยะทางสูงสุด",
     Default = 2500,
     Min = 100,
     Max = 5000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCs", {
-    Text = "NPC ESP",
+    Text = "ESP เอ็นพีซี",
     Default = true,
 }):AddColorPicker("RunawaysESPNPCColor", {
     Default = Color3.fromRGB(255, 90, 90),
-    Title = "NPC Color",
+    Title = "สีเอ็นพีซี",
     Transparency = 0,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCName", {
-    Text = "Show Name",
+    Text = "แสดงชื่อ",
     Default = true,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCHealth", {
-    Text = "Show Health",
+    Text = "แสดงพลังชีวิต",
     Default = true,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCDistance", {
-    Text = "Show Distance",
+    Text = "แสดงระยะทาง",
     Default = true,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCBox", {
-    Text = "Boxes",
+    Text = "กรอบ",
     Default = true,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCHealthBar", {
-    Text = "Health Bars",
+    Text = "แถบพลังชีวิต",
     Default = true,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCTracer", {
-    Text = "Tracers",
+    Text = "เส้นติดตาม",
     Default = false,
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCActiveOnly", {
-    Text = "Active NPCs Only",
+    Text = "เฉพาะเอ็นพีซีที่ทำงานอยู่",
     Default = false,
 })
 
 espNPCBox:AddSlider("RunawaysESPNPCMaxDistance", {
-    Text = "Maximum Distance",
+    Text = "ระยะทางสูงสุด",
     Default = 2000,
     Min = 100,
     Max = 5000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicles", {
-    Text = "Vehicle ESP",
+    Text = "ESP รถ",
     Default = true,
 }):AddColorPicker("RunawaysESPVehicleColor", {
     Default = Color3.fromRGB(180, 110, 255),
-    Title = "Vehicle Color",
+    Title = "สีรถ",
     Transparency = 0,
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicleName", {
-    Text = "Vehicle Name",
+    Text = "ชื่อรถ",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicleHealth", {
-    Text = "Vehicle Health",
+    Text = "พลังชีวิตรถ",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicleDistance", {
-    Text = "Vehicle Distance",
+    Text = "ระยะห่างรถ",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicleBox", {
-    Text = "Vehicle Boxes",
+    Text = "กรอบรถ",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicleTracer", {
-    Text = "Vehicle Tracers",
+    Text = "เส้นติดตามรถ",
     Default = false,
 })
 
 espWorldBox:AddSlider("RunawaysESPVehicleMaxDistance", {
-    Text = "Vehicle Distance Limit",
+    Text = "จำกัดระยะห่างรถ",
     Default = 5000,
     Min = 100,
     Max = 10000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
 espWorldBox:AddDivider()
 
 espWorldBox:AddToggle("RunawaysESPSafes", {
-    Text = "Safe ESP",
+    Text = "ESP จุดปลอดภัย",
     Default = true,
 }):AddColorPicker("RunawaysESPSafeColor", {
     Default = Color3.fromRGB(255, 170, 60),
-    Title = "Safe Color",
+    Title = "สีจุดปลอดภัย",
     Transparency = 0,
 })
 
 espWorldBox:AddToggle("RunawaysESPSafeName", {
-    Text = "Safe Name",
+    Text = "ชื่อจุดปลอดภัย",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPSafeDistance", {
-    Text = "Safe Distance",
+    Text = "ระยะจุดปลอดภัย",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPSafeBox", {
-    Text = "Safe Boxes",
+    Text = "กรอบจุดปลอดภัย",
     Default = true,
 })
 
 espWorldBox:AddToggle("RunawaysESPSafeTracer", {
-    Text = "Safe Tracers",
+    Text = "เส้นติดตามจุดปลอดภัย",
     Default = false,
 })
 
 espWorldBox:AddSlider("RunawaysESPSafeMaxDistance", {
-    Text = "Safe Distance Limit",
+    Text = "จำกัดระยะจุดปลอดภัย",
     Default = 5000,
     Min = 100,
     Max = 10000,
     Rounding = 0,
-    Suffix = " studs",
+    Suffix = " หน่วย",
 })
 
-punchMods.Box:AddLabel("Unarmed punches and melee weapons")
+punchMods.Box:AddLabel("หมัดเปล่าและอาวุธระยะประชิด")
 
 punchMods.Box:AddToggle("RunawaysPunchMods", {
-    Text = "Melee Mods",
+    Text = "ปรับแต่งการโจมตีระยะประชิด",
     Default = false,
     Callback = function(value)
         if value then
@@ -11867,7 +11867,7 @@ punchMods.Box:AddToggle("RunawaysPunchNoCooldown", {
 })
 
 punchMods.Box:AddSlider("RunawaysPunchDamage", {
-    Text = "Melee Damage",
+    Text = "ความเสียหายระยะประชิด",
     Default = punchMods.Defaults.Damage,
     Min = 1,
     Max = 500,
@@ -11878,19 +11878,19 @@ punchMods.Box:AddSlider("RunawaysPunchDamage", {
 })
 
 punchMods.Box:AddSlider("RunawaysPunchSpeed", {
-    Text = "Melee Speed",
+    Text = "ความเร็วโจมตีระยะประชิด",
     Default = punchMods.Defaults.Speed,
     Min = 1,
     Max = 30,
     Rounding = 1,
-    Suffix = " hits/s",
+    Suffix = " ครั้ง/วินาที",
     Callback = function()
         punchMods:Apply(true)
     end,
 })
 
 punchMods.Box:AddSlider("RunawaysPunchObjectDamage", {
-    Text = "Object Damage",
+    Text = "ความเสียหายต่อวัตถุ",
     Default = punchMods.Defaults.ObjectDamage,
     Min = 1,
     Max = 500,
@@ -11900,7 +11900,7 @@ punchMods.Box:AddSlider("RunawaysPunchObjectDamage", {
     end,
 })
 
-punchMods.Box:AddButton("Reset Melee Mods", function()
+punchMods.Box:AddButton("รีเซ็ตการปรับแต่งระยะประชิด", function()
     for _, name in { "RunawaysPunchMods", "RunawaysPunchNoCooldown" } do
         if toggles[name] then
             toggles[name]:SetValue(false)
@@ -11918,7 +11918,7 @@ punchMods.Box:AddButton("Reset Melee Mods", function()
 end)
 
 movementBox:AddToggle("RunawaysPlayerGodMode", {
-    Text = "God Mode",
+    Text = "โหมดอมตะ",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11928,7 +11928,7 @@ movementBox:AddToggle("RunawaysPlayerGodMode", {
 })
 
 movementBox:AddToggle("RunawaysPlayerSpeedBoost", {
-    Text = "Speed Boost",
+    Text = "เพิ่มความเร็ว",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11938,7 +11938,7 @@ movementBox:AddToggle("RunawaysPlayerSpeedBoost", {
 })
 
 movementBox:AddSlider("RunawaysPlayerWalkSpeed", {
-    Text = "Walk Speed",
+    Text = "ความเร็วเดิน",
     Default = 30,
     Min = 15,
     Max = 100,
@@ -11946,7 +11946,7 @@ movementBox:AddSlider("RunawaysPlayerWalkSpeed", {
 })
 
 movementBox:AddToggle("RunawaysPlayerJumpPowerOverride", {
-    Text = "Jump Power Override",
+    Text = "กำหนดพลังการกระโดด",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11956,7 +11956,7 @@ movementBox:AddToggle("RunawaysPlayerJumpPowerOverride", {
 })
 
 movementBox:AddSlider("RunawaysPlayerJumpPower", {
-    Text = "Jump Power",
+    Text = "พลังการกระโดด",
     Default = 60,
     Min = 25,
     Max = 150,
@@ -11964,12 +11964,12 @@ movementBox:AddSlider("RunawaysPlayerJumpPower", {
 })
 
 movementBox:AddToggle("RunawaysPlayerInfiniteJump", {
-    Text = "Infinite Jump",
+    Text = "กระโดดไม่จำกัด",
     Default = false,
 })
 
 movementBox:AddToggle("RunawaysPlayerNoclip", {
-    Text = "Noclip",
+    Text = "ทะลุสิ่งกีดขวาง",
     Default = false,
     Callback = function(value)
         if not value then
@@ -11979,7 +11979,7 @@ movementBox:AddToggle("RunawaysPlayerNoclip", {
 })
 
 movementBox:AddToggle("RunawaysPlayerAntiAFK", {
-    Text = "Anti AFK",
+    Text = "ป้องกัน AFK",
     Default = true,
     Callback = function(value)
         if library.RunawaysAntiAFKConnection then
@@ -12003,7 +12003,7 @@ movementBox:AddToggle("RunawaysPlayerAntiAFK", {
 })
 
 worldBox:AddToggle("RunawaysPlayerFOVOverride", {
-    Text = "FOV Override",
+    Text = "กำหนด FOV",
     Default = false,
     Callback = function(value)
         if not value then
@@ -12013,7 +12013,7 @@ worldBox:AddToggle("RunawaysPlayerFOVOverride", {
 })
 
 worldBox:AddSlider("RunawaysPlayerFieldOfView", {
-    Text = "Field of View",
+    Text = "มุมมองภาพ",
     Default = math.round(workspace.CurrentCamera and workspace.CurrentCamera.FieldOfView or 70),
     Min = 30,
     Max = 120,
@@ -12021,7 +12021,7 @@ worldBox:AddSlider("RunawaysPlayerFieldOfView", {
 })
 
 worldBox:AddToggle("RunawaysPlayerGravityOverride", {
-    Text = "Gravity Override",
+    Text = "กำหนดแรงโน้มถ่วง",
     Default = false,
     Callback = function(value)
         if not value then
@@ -12031,7 +12031,7 @@ worldBox:AddToggle("RunawaysPlayerGravityOverride", {
 })
 
 worldBox:AddSlider("RunawaysPlayerGravity", {
-    Text = "Gravity",
+    Text = "แรงโน้มถ่วง",
     Default = math.round(workspace.Gravity),
     Min = 0,
     Max = 300,
@@ -12107,13 +12107,13 @@ task.spawn(function()
     end
 end)
 
-menuBox:AddLabel("Menu key"):AddKeyPicker("MenuKeybind", {
+menuBox:AddLabel("ปุ่มเมนู"):AddKeyPicker("MenuKeybind", {
     Default = "RightShift",
     NoUI = true,
-    Text = "Menu key",
+    Text = "ปุ่มเมนู",
 })
 
-menuBox:AddButton("Unload", function()
+menuBox:AddButton("ปิดสคริปต์", function()
     library:Unload()
 end)
 
