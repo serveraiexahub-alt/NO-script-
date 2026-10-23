@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
-local Players = game:GetService("ผู้เล่น")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -91,8 +91,8 @@ end
 local data = require(dataModule)
 local packages = require(ReplicatedStorage:WaitForChild("Packages"))
 local luck = packages.Utility.Luck
-local lootData = flow.Loot and require(dataModule:WaitForChild("ของปล้น"):WaitForChild("Data")) or {}
-local lootFolder = flow.Loot and workspace:WaitForChild("ของปล้น") or workspace:FindFirstChild("ของปล้น")
+local lootData = flow.Loot and require(dataModule:WaitForChild("Loot"):WaitForChild("Data")) or {}
+local lootFolder = flow.Loot and workspace:WaitForChild("Loot") or workspace:FindFirstChild("Loot")
 
 if flow.Loot then
     assert(type(flow.Loot.LootEquip) == "function", "LootEquip is unavailable")
@@ -307,7 +307,7 @@ local function getPickupCFrame(root, part)
 end
 
 local function killAllNPCs(radius)
-    local folder = workspace:FindFirstChild("เอ็นพีซี")
+    local folder = workspace:FindFirstChild("NPCs")
 
     if not folder or not flow.NPCs or type(flow.NPCs.Damage) ~= "function" then
         return 0
@@ -335,7 +335,7 @@ local function killAllNPCs(radius)
 end
 
 function library.Rage:AggroNPCs(radius)
-    local folder = workspace:FindFirstChild("เอ็นพีซี")
+    local folder = workspace:FindFirstChild("NPCs")
     local character = player.Character
     local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
 
@@ -513,12 +513,12 @@ local activeWeaponConfig
 local activeWeaponRuntime
 local vehicleAttributeNames = {
     "TopSpeedMPH",
-    "อัตราเร่ง",
+    "Acceleration",
     "Torque",
     "BrakingPower",
     "TurningAngle",
     "TurningAngleSpeedFactor",
-    "แรงกดรถ",
+    "Downforce",
 }
 local vehicleCorners = { "fl", "fr", "rl", "rr" }
 
@@ -579,7 +579,7 @@ function teleports:Refresh(force)
     }
     local map = workspace:FindFirstChild("Map")
     local buildings = map and map:FindFirstChild("Buildings")
-    local npcs = workspace:FindFirstChild("เอ็นพีซี")
+    local npcs = workspace:FindFirstChild("NPCs")
     local vehicles = workspace:FindFirstChild("Vehicles")
 
     if buildings then
@@ -602,7 +602,7 @@ function teleports:Refresh(force)
     end
 
     if npcs then
-        for _, npc in CollectionService:GetTagged("เอ็นพีซี") do
+        for _, npc in CollectionService:GetTagged("NPC") do
             local humanoid = npc:IsA("Model") and npc:FindFirstChildOfClass("Humanoid")
             local root = npc:IsA("Model") and npc:FindFirstChild("HumanoidRootPart")
 
@@ -617,7 +617,7 @@ function teleports:Refresh(force)
     end
 
     if vehicles then
-        for _, vehicle in CollectionService:GetTagged("รถ") do
+        for _, vehicle in CollectionService:GetTagged("Vehicle") do
             local part = vehicle:IsA("Model")
                 and (getVehicleChassis(vehicle) or getVehicleSeat(vehicle) or vehicle:FindFirstChildWhichIsA("BasePart", true))
 
@@ -736,7 +736,7 @@ function teleports:Stream(position)
 end
 
 function teleports:GetDestination(kind, target)
-    if kind == "ผู้เล่น" then
+    if kind == "Players" then
         local character = target.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
         local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -769,7 +769,7 @@ function teleports:GetDestination(kind, target)
         return
     end
 
-    if kind == "เอ็นพีซี" then
+    if kind == "NPCs" then
         local humanoid = target:FindFirstChildOfClass("Humanoid")
         local root = target:FindFirstChild("HumanoidRootPart")
 
@@ -1459,7 +1459,7 @@ function teleports:GetRefuelVehicle()
         return
     end
 
-    for _, vehicle in CollectionService:GetTagged("รถ") do
+    for _, vehicle in CollectionService:GetTagged("Vehicle") do
         local gas = vehicle:FindFirstChild("gasLevel")
         local property = vehicle:FindFirstChild("VehicleProperty")
         local system = vehicle:FindFirstChild("system")
@@ -2114,11 +2114,11 @@ local function applyVehiclePerformance(vehicle)
     end
 
     setVehicleMultiplier(property, attributes, "TopSpeedMPH", topSpeed)
-    setVehicleMultiplier(property, attributes, "อัตราเร่ง", acceleration)
+    setVehicleMultiplier(property, attributes, "Acceleration", acceleration)
     setVehicleMultiplier(property, attributes, "Torque", torque)
     setVehicleMultiplier(property, attributes, "BrakingPower", brakes)
     setVehicleMultiplier(property, attributes, "TurningAngle", steering)
-    setVehicleMultiplier(property, attributes, "แรงกดรถ", downforce)
+    setVehicleMultiplier(property, attributes, "Downforce", downforce)
 
     if type(attributes.TurningAngleSpeedFactor) == "number" then
         property:SetAttribute(
@@ -3186,7 +3186,7 @@ local function refreshSilentAimTargets()
     silentAimLastScan = os.clock()
     table.clear(silentAimTargets)
 
-    for _, npc in CollectionService:GetTagged("เอ็นพีซี") do
+    for _, npc in CollectionService:GetTagged("NPC") do
         if npc:IsA("Model") and npc:IsDescendantOf(workspace) then
             silentAimTargets[#silentAimTargets + 1] = {
                 Model = npc,
@@ -3483,7 +3483,7 @@ local function newESPVisual(kind)
         Tracer = newESPObject("Line"),
     }
 
-    if kind == "เอ็นพีซี" or kind == "ผู้เล่น" then
+    if kind == "NPCs" or kind == "Players" then
         visual.HealthBack = newESPObject("Line")
         visual.Health = newESPObject("Line")
     end
@@ -3574,7 +3574,7 @@ local function getVehiclePart(vehicle)
 end
 
 local function getESPTarget(kind, target)
-    if kind == "ไอเทม" then
+    if kind == "Items" then
         if not isLoot(target) then
             return
         end
@@ -3582,7 +3582,7 @@ local function getESPTarget(kind, target)
         return target, target.PrimaryPart
     end
 
-    if kind == "เอ็นพีซี" then
+    if kind == "NPCs" then
         local humanoid = target.Parent and target:FindFirstChildOfClass("Humanoid")
         local root = target.Parent and target:FindFirstChild("HumanoidRootPart")
 
@@ -3597,7 +3597,7 @@ local function getESPTarget(kind, target)
         return target, root, humanoid
     end
 
-    if kind == "ผู้เล่น" then
+    if kind == "Players" then
         local character = target.Parent == Players and target.Character
         local humanoid = character and character:FindFirstChildOfClass("Humanoid")
         local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -3685,7 +3685,7 @@ end
 local function getESPText(kind, target, humanoid, extra, distance)
     local parts = {}
 
-    if kind == "ไอเทม" then
+    if kind == "Items" then
         if toggles.RunawaysESPItemName.Value then
             parts[#parts + 1] = formatName(target.Name)
         end
@@ -3697,7 +3697,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
         if toggles.RunawaysESPItemPrice.Value then
             parts[#parts + 1] = "$" .. tostring(lootValueByName[target.Name] or 0)
         end
-    elseif kind == "เอ็นพีซี" then
+    elseif kind == "NPCs" then
         if toggles.RunawaysESPNPCName.Value then
             parts[#parts + 1] = formatName(target.Name)
         end
@@ -3705,7 +3705,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
         if toggles.RunawaysESPNPCHealth.Value and humanoid.Health >= 0 then
             parts[#parts + 1] = string.format("%d/%d HP", humanoid.Health, humanoid.MaxHealth)
         end
-    elseif kind == "ผู้เล่น" then
+    elseif kind == "Players" then
         if toggles.RunawaysESPPlayerName.Value then
             local name = target.DisplayName
 
@@ -3732,7 +3732,7 @@ local function getESPText(kind, target, humanoid, extra, distance)
     end
 
     if toggles[espConfig[kind].Distance].Value then
-        parts[#parts + 1] = tostring(math.round(distance)) .. " หน่วย"
+        parts[#parts + 1] = tostring(math.round(distance)) .. " studs"
     end
 
     return table.concat(parts, " | ")
@@ -3741,7 +3741,7 @@ end
 local function getESPColor(kind, target)
     local colorOption = options[espConfig[kind].Color]
 
-    if kind == "ไอเทม"
+    if kind == "Items"
         and toggles.RunawaysESPItemHighValue.Value
         and (tonumber(lootValueByName[target.Name]) or 0) >= options.RunawaysESPItemHighValueThreshold.Value
     then
@@ -3973,7 +3973,7 @@ local function scanESP()
     end
 
     if toggles.RunawaysESPNPCs.Value then
-        local folder = workspace:FindFirstChild("เอ็นพีซี")
+        local folder = workspace:FindFirstChild("NPCs")
 
         if folder then
             local seen = {}
@@ -4041,9 +4041,9 @@ local function scanESP()
         end
     end
 
-    syncESPTargets("ไอเทม", items)
-    syncESPTargets("เอ็นพีซี", npcs)
-    syncESPTargets("ผู้เล่น", players)
+    syncESPTargets("Items", items)
+    syncESPTargets("NPCs", npcs)
+    syncESPTargets("Players", players)
     syncESPTargets("Vehicles", vehicles)
     syncESPTargets("Safes", safes)
 end
@@ -6057,7 +6057,7 @@ function library.AutoFarm:UpdateUI()
     self:SetLabel("Sweep", "Sweep cash: $" .. tostring(math.floor(self.Stats.SweepCash)) .. " | Items sold: " .. tostring(math.floor(self.Stats.SweepItems)))
     self:SetLabel("Run", "Current run: " .. self:FormatDuration(runElapsed) .. " | Gate: " .. self.GateText)
     self:SetLabel("Error", "Last error: " .. self.LastError)
-    self:SetLabel("เว็บฮุก", "Webhook: " .. self.WebhookStatus)
+    self:SetLabel("Webhook", "Webhook: " .. self.WebhookStatus)
 end
 
 function library.AutoFarm:ResetStats()
@@ -6538,7 +6538,7 @@ function library.AutoFarm:BuildWebhook(event, detail)
                 color = event == "Error" and 15158332 or event == "Run Completed" and 5763719 or 3447003,
                 fields = {
                     {
-                        name = "ผู้เล่น",
+                        name = "Player",
                         value = player.DisplayName .. " (@" .. player.Name .. ")",
                         inline = true,
                     },
@@ -6755,7 +6755,7 @@ function library.AutoFarm:QueueTeleport(reason, expectedPlaceId)
             .. "end",
         self.LobbyPlaceId,
         self.GamePlaceId,
-        "ผู้เล่น",
+        "Players",
         "TeleportService",
         self.TransitionKey,
         self.EnabledKey,
@@ -7512,7 +7512,7 @@ function library.AutoFarm:HandleEndScreen(token)
         local requests = 0
 
         self.ReplayRequested = true
-        self:SetPhase("เล่นซ้ำอัตโนมัติ", "Waiting for the replay control")
+        self:SetPhase("Auto Replay", "Waiting for the replay control")
 
         repeat
             self.RunHeartbeat = os.clock()
@@ -7568,7 +7568,7 @@ function library.AutoFarm:HandleEndScreen(token)
                         and currentVotes >= requiredVotes
 
                     if voteComplete then
-                        self:SetPhase("เล่นซ้ำอัตโนมัติ", "Replay vote confirmed")
+                        self:SetPhase("Auto Replay", "Replay vote confirmed")
                         nextRequestAt = os.clock() + 5
                     elseif replayButton or os.clock() - replayStartedAt >= 8 then
                         if not queued then
@@ -7577,7 +7577,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if not queued then
                                 self.LastError = tostring(queueError)
-                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Waiting for the teleport loader")
+                                self:SetPhase("Auto Replay", "Waiting for the teleport loader")
                                 nextRequestAt = os.clock() + 3
                             end
                         end
@@ -7587,7 +7587,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if firstRequest then
                                 self.Stats.Replays += 1
-                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Submitting replay vote")
+                                self:SetPhase("Auto Replay", "Submitting replay vote")
                                 self:Persist()
                             end
 
@@ -7595,7 +7595,7 @@ function library.AutoFarm:HandleEndScreen(token)
 
                             if requested then
                                 requests += 1
-                                self:SetPhase("เล่นซ้ำอัตโนมัติ", "Replay vote submitted")
+                                self:SetPhase("Auto Replay", "Replay vote submitted")
                             else
                                 if firstRequest then
                                     self.Stats.Replays = math.max(0, self.Stats.Replays - 1)
@@ -7603,7 +7603,7 @@ function library.AutoFarm:HandleEndScreen(token)
                                 end
 
                                 self.LastError = tostring(replayError)
-                                self:SetPhase("เล่นซ้ำอัตโนมัติ", self.LastError)
+                                self:SetPhase("Auto Replay", self.LastError)
                             end
 
                             nextRequestAt = os.clock() + 2
@@ -8270,7 +8270,7 @@ function library.AutoFarm:IsGateWindowOpen()
 
     local playerGui = player:FindFirstChildOfClass("PlayerGui")
     local hud = playerGui and playerGui:FindFirstChild("HudGui")
-    local events = hud and hud:FindFirstChild("เหตุการณ์")
+    local events = hud and hud:FindFirstChild("Events")
     local closing = events and events:FindFirstChild("Closing")
 
     if not closing or not closing.Visible then
@@ -8539,7 +8539,7 @@ function library.AutoFarm:MoveToSafeZone(token)
     root.AssemblyAngularVelocity = Vector3.zero
     root.Anchored = true
     self:DisengageHelicopter()
-    self:SetPhase("รอประตูอย่างปลอดภัย", "Protected from the helicopter until the gate opens")
+    self:SetPhase("Safe Gate Wait", "Protected from the helicopter until the gate opens")
 
     return true
 end
@@ -8923,7 +8923,7 @@ function library.AutoFarm:RunGame(token)
         and library.MapSweep:GetSetting("RunawaysAutoFarmSweepFull", "SweepFull", false)
     then
         library.MapSweep.FullSweepJob = game.JobId
-        self:RunSweep(token, "กวาดของปล้น", tonumber(library.MapSweep:GetSetting("RunawaysAutoFarmSweepLimit", "SweepLimit", 180)) or 180)
+        self:RunSweep(token, "Loot Sweep", tonumber(library.MapSweep:GetSetting("RunawaysAutoFarmSweepLimit", "SweepLimit", 180)) or 180)
 
         if not self.Running or self.Token ~= token then
             return true
@@ -9350,8 +9350,8 @@ function library.AutoFarm:Destroy(preserve)
 end
 
 local window = library:CreateWindow({
-    Title = "RUNAWAYS",
-    Footer = "RUNAWAYS | " .. telegram,
+    Title = "การหลบหนี[เบต้า] | สกัด Hub",
+    Footer = "การหลบหนี[เบต้า] | สกัด Hub | " .. telegram,
     Size = UDim2.fromOffset(library.IsMobile and 560 or 640, library.IsMobile and 360 or 520),
     NotifySide = "Right",
     ShowCustomCursor = not library.IsMobile,
@@ -9700,7 +9700,7 @@ teleports.EntityBox:AddDropdown("RunawaysTeleportNPC", {
     MaxVisibleDropdownItems = 12,
 })
 teleports.EntityBox:AddButton("เทเลพอร์ตไปเอ็นพีซี", function()
-    teleports:Go("เอ็นพีซี")
+    teleports:Go("NPCs")
 end)
 teleports.EntityBox:AddDropdown("RunawaysTeleportVehicle", {
     Values = { "None" },
@@ -9722,7 +9722,7 @@ teleports.EntityBox:AddDropdown("RunawaysTeleportPlayer", {
     MaxVisibleDropdownItems = 12,
 })
 teleports.EntityBox:AddButton("เทเลพอร์ตไปผู้เล่น", function()
-    teleports:Go("ผู้เล่น")
+    teleports:Go("Players")
 end)
 
 npcBox:AddButton("กำจัดเอ็นพีซีครั้งเดียว", function()
@@ -11510,7 +11510,7 @@ silentAimBox:AddToggle("RunawaysSilentAimVisibleCheck", {
 })
 
 espStyleBox:AddToggle("RunawaysESPEnabled", {
-    Text = "เปิดใช้ ESP",
+    Text = "เปิดใช้ แสดงข้อมูล",
     Default = false,
     Callback = function(value)
         if value and not drawingAvailable then
@@ -11526,7 +11526,7 @@ espStyleBox:AddToggle("RunawaysESPEnabled", {
     Default = "P",
     SyncToggleState = true,
     Mode = "Toggle",
-    Text = "ปุ่ม ESP",
+    Text = "ปุ่ม แสดงข้อมูล",
 })
 
 espStyleBox:AddSlider("RunawaysESPTextSize", {
@@ -11567,7 +11567,7 @@ espStyleBox:AddDropdown("RunawaysESPTracerOrigin", {
 })
 
 espItemBox:AddToggle("RunawaysESPItems", {
-    Text = "ESP ไอเทม",
+    Text = "แสดงข้อมูล ไอเทม",
     Default = true,
 }):AddColorPicker("RunawaysESPItemColor", {
     Default = Color3.fromRGB(255, 210, 90),
@@ -11661,7 +11661,7 @@ espItemBox:AddSlider("RunawaysESPMaxItems", {
 })
 
 espPlayerBox:AddToggle("RunawaysESPPlayers", {
-    Text = "ESP ผู้เล่น",
+    Text = "แสดงข้อมูล ผู้เล่น",
     Default = true,
 }):AddColorPicker("RunawaysESPPlayerColor", {
     Default = Color3.fromRGB(75, 210, 255),
@@ -11709,7 +11709,7 @@ espPlayerBox:AddSlider("RunawaysESPPlayerMaxDistance", {
 })
 
 espNPCBox:AddToggle("RunawaysESPNPCs", {
-    Text = "ESP เอ็นพีซี",
+    Text = "แสดงข้อมูล เอ็นพีซี",
     Default = true,
 }):AddColorPicker("RunawaysESPNPCColor", {
     Default = Color3.fromRGB(255, 90, 90),
@@ -11762,7 +11762,7 @@ espNPCBox:AddSlider("RunawaysESPNPCMaxDistance", {
 })
 
 espWorldBox:AddToggle("RunawaysESPVehicles", {
-    Text = "ESP รถ",
+    Text = "แสดงข้อมูล รถ",
     Default = true,
 }):AddColorPicker("RunawaysESPVehicleColor", {
     Default = Color3.fromRGB(180, 110, 255),
@@ -11807,7 +11807,7 @@ espWorldBox:AddSlider("RunawaysESPVehicleMaxDistance", {
 espWorldBox:AddDivider()
 
 espWorldBox:AddToggle("RunawaysESPSafes", {
-    Text = "ESP จุดปลอดภัย",
+    Text = "แสดงข้อมูล จุดปลอดภัย",
     Default = true,
 }):AddColorPicker("RunawaysESPSafeColor", {
     Default = Color3.fromRGB(255, 170, 60),
